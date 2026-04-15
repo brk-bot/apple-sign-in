@@ -24,6 +24,7 @@ public class SignInWithApple: CAPPlugin, CAPBridgedPlugin {
 
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
     }
 
@@ -45,6 +46,14 @@ public class SignInWithApple: CAPPlugin, CAPBridgedPlugin {
         }
 
         return nil
+    }
+}
+
+extension SignInWithApple: ASAuthorizationControllerPresentationContextProviding {
+    public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        let scenes = UIApplication.shared.connectedScenes
+        let windowScene = scenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
+        return windowScene?.windows.first(where: { $0.isKeyWindow }) ?? UIWindow()
     }
 }
 
